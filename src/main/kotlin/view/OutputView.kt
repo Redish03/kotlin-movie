@@ -86,7 +86,7 @@ class OutputView {
         amount: Int,
         usedPoint: Int,
     ) {
-        println("결제 금액: ${"%,d".format(amount)}원 (포인트 ${"%,d".format(usedPoint)}원 사용)")
+        println("결제 금액: ${amount.toDecimalFormat()}원 (포인트 ${usedPoint.toDecimalFormat()}원 사용)")
         println()
         println("감사합니다.")
     }
@@ -102,5 +102,9 @@ class OutputView {
                 "${screeningInfos.startTime.value.toLocalTime()}"
 
         return screeningInfo + "좌석: " + seats
+    }
+
+    fun Int.toDecimalFormat(): String {
+        return "%,d".format(this)
     }
 }
