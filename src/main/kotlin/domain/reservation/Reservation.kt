@@ -9,7 +9,7 @@ class Reservation(
 ) {
     fun addOneReservationScreen(screen: Screening, seats: List<Seat>): ReservedScreen {
         val newReservation = ReservedScreen(screen, seats)
-        cart.add(newReservation)
+        cart = cart.add(newReservation)
         updateScreeningReservation(screen, newReservation.seats)
         return newReservation
     }
