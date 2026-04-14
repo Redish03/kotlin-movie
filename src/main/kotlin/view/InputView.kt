@@ -1,23 +1,23 @@
 package view
 
 import constants.ErrorMessages
-import controller.CinemaController.Companion.SEAT_NUMBER_PARSER
+
 import java.time.LocalDate
 
 class InputView {
-    fun readConfirmTicketingStart(): String {
+    fun isReservationStarted(): Boolean {
         println("영화 예매를 시작합니다. 새 예매를 생성하시겠습니까? (Y/N)")
-        return readln().trim()
+        return readln().trim().uppercase() == CONFIRM_INPUT
     }
 
-    fun readConfirmAddOtherMovie(): String {
+    fun isAddMoreMovie(): Boolean {
         println("다른 영화를 추가하시겠습니까? (Y/N)")
-        return readln().trim()
+        return readln().trim().uppercase() == CONFIRM_INPUT
     }
 
-    fun readConfirmPay(): String {
+    fun isConfirmPay(): Boolean {
         println("위 금액으로 결제하시겠습니까? (Y/N)")
-        return readln().trim()
+        return readln().trim().uppercase() == CONFIRM_INPUT
     }
 
     fun readMovieTitle(): String {
@@ -70,5 +70,10 @@ class InputView {
         println("1) 신용카드(5% 할인)")
         println("2) 현금(2% 할인)")
         return readln().trim().toInt()
+    }
+
+    companion object {
+        private const val CONFIRM_INPUT = "Y"
+        const val SEAT_NUMBER_PARSER = ","
     }
 }

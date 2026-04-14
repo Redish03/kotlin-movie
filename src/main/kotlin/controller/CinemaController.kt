@@ -24,7 +24,7 @@ class CinemaController(
     private var cart: Cart = Cart()
 
     fun run() {
-        if (!isReservationStarted()) {
+        if (!inputView.isReservationStarted()) {
             outputView.printEndTicketing()
             return
         }
@@ -36,7 +36,7 @@ class CinemaController(
     private fun reserveMovies() {
         do {
             retryPrompt { reserveOneMovie() }
-        } while (askToAddMoreMovie())
+        } while (inputView.isAddMoreMovie())
     }
 
     private fun reserveOneMovie() {
@@ -104,8 +104,7 @@ class CinemaController(
     private fun confirmPayment(result: PayResult.Success) {
         outputView.printTotalCost(result.paidAmount)
 
-        val confirm = inputView.readConfirmPay().uppercase()
-        if (confirm == CONFIRM_INPUT) {
+        if (inputView.isConfirmPay()) {
             printReservationResult(result)
             return
         }
@@ -138,12 +137,6 @@ class CinemaController(
         )
     }
 
-    private fun isReservationStarted(): Boolean =
-        inputView.readConfirmTicketingStart().uppercase() == CONFIRM_INPUT
-
-    private fun askToAddMoreMovie(): Boolean =
-        inputView.readConfirmAddOtherMovie().uppercase() == CONFIRM_INPUT
-
     private fun <T> retryPrompt(action: () -> T): T {
         while (true) {
             try {
@@ -152,10 +145,5 @@ class CinemaController(
                 outputView.printErrorMessage(e.message ?: "")
             }
         }
-    }
-
-    companion object {
-        private const val CONFIRM_INPUT = "Y"
-        const val SEAT_NUMBER_PARSER = ","
     }
 }
