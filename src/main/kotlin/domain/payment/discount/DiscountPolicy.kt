@@ -7,4 +7,6 @@ interface DiscountPolicy {
         reservedScreen: ReservedScreen,
         money: Int,
     ): Int
+
+    fun isDiscountable(reservedScreen: ReservedScreen): Boolean
 }
