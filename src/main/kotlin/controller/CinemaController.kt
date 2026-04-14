@@ -3,7 +3,7 @@ package controller
 import domain.account.Account
 import domain.payment.PayResult
 import domain.payment.Payment
-import domain.payment.PaymentMethod
+import domain.payment.paymentmethod.PaymentMethod
 import domain.reservation.Cart
 import domain.reservation.ReservedScreen
 import domain.reservation.Seat
@@ -92,7 +92,7 @@ class CinemaController(
         outputView.printCart(cart)
 
         val point = retryPrompt { inputView.readPointAmount() }
-        val paymentMethod = retryPrompt { PaymentMethod.validate(inputView.readPaymentMethod()) }
+        val paymentMethod = retryPrompt { PaymentMethod.classifyPaymentMethod(inputView.readPaymentMethod()) }
         val payment = Payment(cart)
 
         when (val result = payment.pay(point, account, paymentMethod)) {

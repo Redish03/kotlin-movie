@@ -3,6 +3,8 @@ package domain.payment
 import controller.ScreeningMockData
 import domain.account.Account
 import domain.account.Point
+import domain.payment.paymentmethod.CreditCard
+import domain.payment.paymentmethod.PaymentMethod
 import domain.reservation.Cart
 import domain.reservation.ReservedScreen
 import domain.reservation.Seat
@@ -52,7 +54,7 @@ class PaymentTest {
             newPayment.pay(
                 pointAmount = 0,
                 account = Account(),
-                selectedPaymentMethod = PaymentMethod.CREDIT_CARD,
+                selectedPaymentMethod = CreditCard(),
             )
 
         assertEquals(23_750, (result as PayResult.Success).paidAmount)
@@ -64,13 +66,13 @@ class PaymentTest {
             payment.pay(
                 pointAmount = 3000,
                 account = Account(),
-                selectedPaymentMethod = PaymentMethod.CREDIT_CARD,
+                selectedPaymentMethod = CreditCard(),
             )
         val result2 =
             payment.pay(
                 pointAmount = 2000,
                 account = Account(Point(0)),
-                selectedPaymentMethod = PaymentMethod.CREDIT_CARD,
+                selectedPaymentMethod = CreditCard(),
             )
 
         assertTrue(result1 is PayResult.Failure)

@@ -5,6 +5,7 @@ import domain.account.Account
 import domain.payment.discount.DiscountPolicy
 import domain.payment.discount.MovieDayDiscountPolicy
 import domain.payment.discount.TimeDiscountPolicy
+import domain.payment.paymentmethod.PaymentMethod
 import domain.reservation.Cart
 import domain.reservation.ReservedScreen
 
