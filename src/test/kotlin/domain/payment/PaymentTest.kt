@@ -3,6 +3,8 @@ package domain.payment
 import controller.ScreeningMockData
 import domain.account.Account
 import domain.account.Point
+import domain.payment.discount.MovieDayDiscountPolicy
+import domain.payment.discount.TimeDiscountPolicy
 import domain.payment.paymentmethod.CreditCard
 import domain.payment.paymentmethod.PaymentMethod
 import domain.reservation.Cart
@@ -33,6 +35,8 @@ class PaymentTest {
             cart = emptyCart,
         )
 
+    private val discountPolicies = listOf(MovieDayDiscountPolicy(), TimeDiscountPolicy())
+
     @Test
     fun `카트에 담긴 좌석들의 날짜 및 시간 할인 적용 금액을 계산한다`() {
         val newPayment =
@@ -40,7 +44,7 @@ class PaymentTest {
                 cart = containedCart,
             )
 
-        assertEquals(25000, newPayment.discountedTotalAmount())
+        assertEquals(25000, newPayment.discountedTotalAmount(discountPolicies))
     }
 
     @Test

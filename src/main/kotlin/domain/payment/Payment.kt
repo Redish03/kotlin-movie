@@ -8,6 +8,7 @@ import domain.payment.discount.TimeDiscountPolicy
 import domain.payment.paymentmethod.PaymentMethod
 import domain.reservation.Cart
 import domain.reservation.ReservedScreen
+import java.sql.Time
 
 class Payment(
     val cart: Cart,
@@ -18,7 +19,8 @@ class Payment(
         selectedPaymentMethod: PaymentMethod,
     ): PayResult =
         runCatching {
-            val discountedByDateAmount = discountedTotalAmount()
+            val discountPolicies = listOf(MovieDayDiscountPolicy(), TimeDiscountPolicy())
+            val discountedByDateAmount = discountedTotalAmount(discountPolicies)
             val amountAfterPoint = applyPoint(discountedByDateAmount, account, pointAmount)
             val paidAmount = selectPaymentMethod(amountAfterPoint, selectedPaymentMethod)
 
@@ -34,24 +36,23 @@ class Payment(
             )
         }
 
-    fun discountedTotalAmount(): Int {
+    fun discountedTotalAmount(applyingPolicies: List<DiscountPolicy>): Int {
         var totalAmount = 0
         cart.items.forEach { reservedScreen ->
-            val discountedByDateAmount =
-                applyDiscounts(MovieDayDiscountPolicy(), reservedScreen, reservedScreen.price())
-            val discountedByTimeAmount =
-                applyDiscounts(TimeDiscountPolicy(), reservedScreen, discountedByDateAmount)
-            totalAmount += discountedByTimeAmount
+            val discountAmount = applyDiscounts(applyingPolicies, reservedScreen, reservedScreen.price())
+            totalAmount += discountAmount
         }
         return totalAmount
     }
 
     private fun applyDiscounts(
-        discountPolicy: DiscountPolicy,
+        applyingPolicies: List<DiscountPolicy>,
         reservedScreen: ReservedScreen,
         money: Int,
     ): Int {
-        return discountPolicy.discount(reservedScreen, money)
+        var result = money
+        applyingPolicies.forEach { result = it.discount(reservedScreen, result) }
+        return result
     }
 
     private fun applyPoint(
