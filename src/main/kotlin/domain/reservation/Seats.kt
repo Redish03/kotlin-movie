@@ -5,9 +5,14 @@ import constants.ErrorMessages
 class Seats private constructor(
     private val values: List<Seat>,
 ) {
-    init {
-//        require(values.size == TOTAL_SEAT_COUNT) { "좌석은 총 ${TOTAL_SEAT_COUNT}개여야 합니다." }
-    }
+    fun allSeats(): List<Seat> = values.toList()
+
+    private fun findBySeatNumber(seatNumber: String): Seat =
+        values.firstOrNull { it.seatNumber == seatNumber.trim().uppercase() }
+            ?: throw IllegalArgumentException(ErrorMessages.NOT_EXIST_SEAT.message + seatNumber)
+
+    fun findAllBySeatNumbers(seatNumbers: List<String>): List<Seat> =
+        seatNumbers.map { findBySeatNumber(it) }
 
     companion object {
         private const val ROW_SIZE = 5
@@ -26,13 +31,4 @@ class Seats private constructor(
             return Seats(seats)
         }
     }
-
-    fun allSeats(): List<Seat> = values.toList()
-
-    private fun findBySeatNumber(seatNumber: String): Seat =
-        values.firstOrNull { it.seatNumber == seatNumber.trim().uppercase() }
-            ?: throw IllegalArgumentException(ErrorMessages.NOT_EXIST_SEAT.message + seatNumber)
-
-    fun findAllBySeatNumbers(seatNumbers: List<String>): List<Seat> =
-        seatNumbers.map { findBySeatNumber(it) }
 }

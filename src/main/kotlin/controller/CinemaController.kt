@@ -4,8 +4,7 @@ import domain.account.Account
 import domain.payment.PayResult
 import domain.payment.Payment
 import domain.payment.paymentmethod.PaymentMethod
-import domain.reservation.Cart
-import domain.reservation.ReservedScreen
+import domain.reservation.Reservation
 import domain.reservation.Seat
 import domain.reservation.Seats
 import domain.screening.Screening
@@ -16,13 +15,12 @@ import java.time.LocalDate
 
 class CinemaController(
     private val screenings: Screenings,
+    private val reservation: Reservation,
     private val inputView: InputView,
     private val outputView: OutputView,
     private val account: Account = Account(),
     private val allSeats: Seats = Seats.create(),
 ) {
-    private var cart: Cart = Cart()
-
     fun run() {
         if (!inputView.isReservationStarted()) {
             outputView.printEndTicketing()
@@ -44,14 +42,7 @@ class CinemaController(
         val selectedScreening = retryPrompt { readAvailableScreening(foundedScreenings) }
         val selectedSeats = retryPrompt { readAvailableSeats(selectedScreening) }
 
-        val reservedItem =
-            ReservedScreen(
-                screen = selectedScreening,
-                seats = selectedSeats,
-            )
-
-        addToCart(reservedItem)
-        outputView.printCartAdded(reservedItem)
+        outputView.printCartAdded(reservation.addOneReservationScreen(selectedScreening, selectedSeats))
     }
 
     private fun inputMovieInfo(): List<Screening> {
@@ -66,34 +57,26 @@ class CinemaController(
             outputView.printScreenings(availableScreenings)
 
             val selectedNumber = inputView.readScreeningNumber()
-            val selectedScreening =
-                screenings.findSelectedScreening(selectedNumber, availableScreenings)
+            val selectedScreening = reservation.findScreening(selectedNumber, availableScreenings)
 
-            cart.checkScreeningOverlap(selectedScreening)
+            reservation.checkScreeningOverlap(selectedScreening)
             selectedScreening
         }
 
     private fun readAvailableSeats(screening: Screening): List<Seat> {
         outputView.printSeatLayout(allSeats, screening.reservedSeats)
-
         val inputSeat = retryPrompt { inputView.readSeatNumbers() }
-        val selectedSeats = allSeats.findAllBySeatNumbers(inputSeat)
-        screening.isReserved(selectedSeats)
 
-        return selectedSeats
-    }
-
-    private fun addToCart(reservedItem: ReservedScreen) {
-        cart = cart.add(reservedItem)
-        updateScreeningReservation(reservedItem.screen, reservedItem.seats)
+        return reservation.checkReservedSeat(inputSeat, allSeats, screening)
     }
 
     private fun proceedPayment() {
-        outputView.printCart(cart)
+        val result = reservation.reserveResultCart()
+        outputView.printCart(result)
 
         val point = retryPrompt { inputView.readPointAmount() }
         val paymentMethod = retryPrompt { PaymentMethod.classifyPaymentMethod(inputView.readPaymentMethod()) }
-        val payment = Payment(cart)
+        val payment = Payment(result)
 
         when (val result = payment.pay(point, account, paymentMethod)) {
             is PayResult.Success -> confirmPayment(result)
@@ -120,21 +103,6 @@ class CinemaController(
         }
 
         outputView.printPaymentResult(result.paidAmount, result.usedPoint)
-    }
-
-    private fun updateScreeningReservation(
-        screening: Screening,
-        selectedSeats: List<Seat>,
-    ) {
-        screenings.updateScreening(
-            this@CinemaController.screenings.screenings.map {
-                if (it.movie == screening.movie && it.startTime == screening.startTime) {
-                    it.reserve(selectedSeats)
-                } else {
-                    it
-                }
-            },
-        )
     }
 
     private fun <T> retryPrompt(action: () -> T): T {

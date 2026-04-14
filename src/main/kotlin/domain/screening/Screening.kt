@@ -9,19 +9,6 @@ class Screening private constructor(
     val startTime: ScreeningStartTime,
     val reservedSeats: List<Seat>,
 ) {
-    companion object {
-        fun create(
-            movie: Movie,
-            startTime: ScreeningStartTime,
-            reservedSeats: List<Seat> = emptyList(),
-        ): Screening =
-            Screening(
-                movie = movie,
-                startTime = startTime,
-                reservedSeats = reservedSeats,
-            )
-    }
-
     fun isSeatReserved(seat: Seat): Boolean = reservedSeats.contains(seat)
 
     fun isReserved(seats: List<Seat>) {
@@ -37,12 +24,23 @@ class Screening private constructor(
         )
     }
 
-    fun isMovie(movie: Movie): Boolean = this.movie == movie
-
     fun endTime(): LocalDateTime = startTime.value.plusMinutes(movie.runningTime.value.toLong())
 
     fun overlaps(otherScreen: Screening): Boolean =
         startTime.value < otherScreen.endTime() && otherScreen.startTime.value < endTime()
+
+    companion object {
+        fun create(
+            movie: Movie,
+            startTime: ScreeningStartTime,
+            reservedSeats: List<Seat> = emptyList(),
+        ): Screening =
+            Screening(
+                movie = movie,
+                startTime = startTime,
+                reservedSeats = reservedSeats,
+            )
+    }
 }
 
 @JvmInline

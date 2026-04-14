@@ -1,22 +1,13 @@
 package domain.payment
 
-import controller.ScreeningMockData
 import domain.payment.discount.MovieDayDiscountPolicy
 import domain.payment.discount.TimeDiscountPolicy
 import domain.reservation.ReservedScreen
-import domain.reservation.Seat
-import domain.reservation.SeatColumn
-import domain.reservation.SeatGrade
-import domain.reservation.SeatRow
-import domain.reservation.Seats
-import domain.screening.Movie
-import domain.screening.MovieTitle
-import domain.screening.RunningTime
-import domain.screening.Screening
-import domain.screening.ScreeningStartTime
+import domain.screening.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
+
 class DiscountPolicyTest {
     private fun createReservedScreen(dateTime: LocalDateTime): ReservedScreen {
         val movie = Movie(
