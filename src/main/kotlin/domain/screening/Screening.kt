@@ -1,0 +1,49 @@
+package domain.screening
+
+import constants.ErrorMessages
+import domain.reservation.Seat
+import java.time.LocalDateTime
+
+class Screening private constructor(
+    val movie: Movie,
+    val startTime: ScreeningStartTime,
+    val reservedSeats: List<Seat>,
+) {
+    fun isSeatReserved(seat: Seat): Boolean = reservedSeats.contains(seat)
+
+    fun isReserved(seats: List<Seat>) {
+        require(seats.none { reservedSeats.contains(it) }) { ErrorMessages.SELECTED_RESERVED_SEAT.message }
+    }
+
+    fun reserve(seats: List<Seat>): Screening {
+        require(seats.none { isSeatReserved(it) }) { ErrorMessages.SELECTED_RESERVED_SEAT.message }
+        return Screening(
+            movie = movie,
+            startTime = startTime,
+            reservedSeats = reservedSeats + seats,
+        )
+    }
+
+    fun endTime(): LocalDateTime = startTime.value.plusMinutes(movie.runningTime.value.toLong())
+
+    fun overlaps(otherScreen: Screening): Boolean =
+        startTime.value < otherScreen.endTime() && otherScreen.startTime.value < endTime()
+
+    companion object {
+        fun create(
+            movie: Movie,
+            startTime: ScreeningStartTime,
+            reservedSeats: List<Seat> = emptyList(),
+        ): Screening =
+            Screening(
+                movie = movie,
+                startTime = startTime,
+                reservedSeats = reservedSeats,
+            )
+    }
+}
+
+@JvmInline
+value class ScreeningStartTime(
+    val value: LocalDateTime,
+)
