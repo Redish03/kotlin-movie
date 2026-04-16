@@ -61,4 +61,4 @@
     - `ScreeningRepository`: 영화 및 상영 정보 조회
     - `ReservationRepository`: 예매된 좌석 정보 저장 및 조회
 - [x] 도메인 계층에 식별자(`id`) 추가 (도메인 변경 최소화)
-- [ ] 데이터베이스 연동 테스트 코드 작성 (In-Memory DB 활용)
+- [x] 데이터베이스 연동 테스트 코드 작성 (In-Memory DB 활용)

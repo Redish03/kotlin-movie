@@ -86,15 +86,15 @@ class JdbcScreeningRepository(
         if (newSeats.isNotEmpty()) {
             val sql = "INSERT INTO reservation (screening_id, seat_row, seat_column, seat_grade) VALUES (?, ?, ?, ?)"
 
-            connection.prepareStatement(sql).use { pstmt ->
+            connection.prepareStatement(sql).use { statement ->
                 for (seat in newSeats) {
-                    pstmt.setLong(1, screeningId) // 이제 식별자를 바로 쓸 수 있습니다!
-                    pstmt.setString(2, seat.row.value)
-                    pstmt.setInt(3, seat.column.value)
-                    pstmt.setString(4, seat.grade.name)
-                    pstmt.addBatch()
+                    statement.setLong(1, screeningId) // 이제 식별자를 바로 쓸 수 있습니다!
+                    statement.setString(2, seat.row.value)
+                    statement.setInt(3, seat.column.value)
+                    statement.setString(4, seat.grade.name)
+                    statement.addBatch()
                 }
-                pstmt.executeBatch()
+                statement.executeBatch()
             }
         }
     }

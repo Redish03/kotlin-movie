@@ -17,8 +17,8 @@ class ReservedScreeingTest {
             Screening.create(
                 movie =
                     Movie(
-                        MovieTitle("어벤져스"),
-                        RunningTime(120),
+                        title = MovieTitle("어벤져스"),
+                        runningTime = RunningTime(120),
                     ),
                 startTime = ScreeningStartTime(LocalDateTime.now()),
                 reservedSeats = seats,
@@ -34,8 +34,8 @@ class ReservedScreeingTest {
             Screening.create(
                 movie =
                     Movie(
-                        MovieTitle("어벤져스"),
-                        RunningTime(120),
+                        title = MovieTitle("어벤져스"),
+                        runningTime = RunningTime(120),
                     ),
                 startTime = ScreeningStartTime(LocalDateTime.now()),
                 reservedSeats = seats,
