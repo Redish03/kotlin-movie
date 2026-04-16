@@ -5,9 +5,9 @@ import domain.screening.Screening
 import java.time.LocalDate
 
 class Screenings(
-    val screenings: List<Screening>,
-) {
-    fun findByMovieTitleAndDate(
+    var screenings: List<Screening>,
+): ScreeningRepository {
+    override fun findByMovieTitleAndDate(
         title: String,
         date: LocalDate,
     ): List<Screening> {
@@ -19,7 +19,7 @@ class Screenings(
         return foundedScreenings
     }
 
-    fun findSelectedScreening(
+    override fun findSelectedScreening(
         selectedNumber: Int,
         availableScreenings: List<Screening>,
     ): Screening {
@@ -30,6 +30,9 @@ class Screenings(
         return availableScreenings[selectedNumber - 1]
     }
 
-    fun updateScreening(updatedScreening: List<Screening>): Screenings =
-        Screenings(updatedScreening)
+    override fun updateScreening(updatedScreening: Screening) {
+        screenings = screenings.map {
+            if(it.movie == updatedScreening.movie && it.startTime == updatedScreening.startTime) updatedScreening else it
+        }
+    }
 }

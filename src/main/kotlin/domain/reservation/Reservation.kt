@@ -1,10 +1,11 @@
 package domain.reservation
 
 import domain.screening.Screening
+import repository.ScreeningRepository
 import repository.Screenings
 
 class Reservation(
-    private val screenings: Screenings,
+    private val screenings: ScreeningRepository,
     private var cart: Cart,
 ) {
     fun addOneReservationScreen(screen: Screening, seats: List<Seat>): ReservedScreen {
@@ -15,15 +16,8 @@ class Reservation(
     }
 
     fun updateScreeningReservation(screening: Screening, selectedSeats: List<Seat>) {
-        screenings.updateScreening(
-            this@Reservation.screenings.screenings.map {
-                if(it.movie == screening.movie && it.startTime == screening.startTime) {
-                    it.reserve(selectedSeats)
-                } else {
-                    it
-                }
-            }
-        )
+        val updatedScreening = screening.reserve(selectedSeats)
+        screenings.updateScreening(updatedScreening)
     }
 
     fun checkReservedSeat(inputSeatNumber: List<String>, allSeats: Seats, screening: Screening): List<Seat> {

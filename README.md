@@ -54,10 +54,10 @@
 ### 기능 목록
 - [x] H2 데이터베이스 의존성 추가
 - [ ] 데이터베이스 스키마(DDL) 및 초기 데이터(DML) 스크립트 작성
-- [ ] JDBC Connection 처리를 위한 `ConnectionProvider` 구현
+- [x] JDBC Connection 처리를 위한 `ConnectionProvider` 구현
     - 로컬 환경: 파일 기반 H2 데이터베이스 (`jdbc:h2:~/kotlin-movie`)
     - 테스트 환경: In-Memory 기반 H2 데이터베이스 (`jdbc:h2:mem:test;DB_CLOSE_DELAY=-1`)
-- [ ] 데이터베이스 연동 기반 Repository 구현
+- [x] 데이터베이스 연동 기반 Repository 구현
     - `ScreeningRepository`: 영화 및 상영 정보 조회
     - `ReservationRepository`: 예매된 좌석 정보 저장 및 조회
 - [ ] 도메인 계층에 식별자(`id`) 추가 (도메인 변경 최소화)
