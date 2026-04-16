@@ -5,6 +5,7 @@ import domain.reservation.Seat
 import java.time.LocalDateTime
 
 class Screening private constructor(
+    val id: Long = 0L,
     val movie: Movie,
     val startTime: ScreeningStartTime,
     val reservedSeats: List<Seat>,
@@ -18,6 +19,7 @@ class Screening private constructor(
     fun reserve(seats: List<Seat>): Screening {
         require(seats.none { isSeatReserved(it) }) { ErrorMessages.SELECTED_RESERVED_SEAT.message }
         return Screening(
+            id = this.id,
             movie = movie,
             startTime = startTime,
             reservedSeats = reservedSeats + seats,
@@ -31,6 +33,7 @@ class Screening private constructor(
 
     companion object {
         fun create(
+            id: Long = 0L,
             movie: Movie,
             startTime: ScreeningStartTime,
             reservedSeats: List<Seat> = emptyList(),

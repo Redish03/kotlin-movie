@@ -1,6 +1,7 @@
 package domain.screening
 
 class Movie(
+    val id: Long = 0L,
     val title: MovieTitle,
     val runningTime: RunningTime,
 )
