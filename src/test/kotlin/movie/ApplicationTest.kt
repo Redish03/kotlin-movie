@@ -41,7 +41,7 @@ class ApplicationTest(
                   "reservations": [
                     {
                       "screeningId": 101,
-                      "seats": ["C2", "C3"]
+                      "seats": ["B3", "B4"]
                     }
                   ],
                   "usedPoints": 2000,

@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 class Screenings(
     var screenings: List<Screening>,
-): ScreeningRepository {
+) : ScreeningRepository {
     override fun findByMovieTitleAndDate(
         title: String,
         date: LocalDate,
@@ -32,7 +32,7 @@ class Screenings(
 
     override fun updateScreening(updatedScreening: Screening) {
         screenings = screenings.map {
-            if(it.movie == updatedScreening.movie && it.startTime == updatedScreening.startTime) updatedScreening else it
+            if (it.movie == updatedScreening.movie && it.startTime == updatedScreening.startTime) updatedScreening else it
         }
     }
 

@@ -5,11 +5,7 @@ import movie.domain.reservation.Seat
 import movie.domain.reservation.SeatColumn
 import movie.domain.reservation.SeatGrade
 import movie.domain.reservation.SeatRow
-import movie.domain.screening.Movie
-import movie.domain.screening.MovieTitle
-import movie.domain.screening.RunningTime
-import movie.domain.screening.Screening
-import movie.domain.screening.ScreeningStartTime
+import movie.domain.screening.*
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.time.LocalDate

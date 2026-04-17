@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.PrintWriter
 import java.sql.Connection
-import java.sql.DriverManager
 import java.sql.SQLFeatureNotSupportedException
 import java.time.LocalDate
 import java.time.LocalDateTime

@@ -15,7 +15,8 @@ object DatabaseConnection {
 
     fun initSchema(connection: Connection) {
         val statement = connection.createStatement()
-        statement.execute("""
+        statement.execute(
+            """
             CREATE TABLE IF NOT EXISTS movie (
                 id BIGINT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(255) NOT NULL,
@@ -37,6 +38,7 @@ object DatabaseConnection {
                 seat_grade VARCHAR(10) NOT NULL,
                 FOREIGN KEY (screening_id) REFERENCES screening(id)
             );
-        """.trimIndent())
+        """.trimIndent()
+        )
     }
 }
