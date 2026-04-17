@@ -8,7 +8,6 @@ import movie.domain.payment.discount.TimeDiscountPolicy
 import movie.domain.payment.paymentmethod.PaymentMethod
 import movie.domain.reservation.Cart
 import movie.domain.reservation.ReservedScreen
-import java.sql.Time
 
 class Payment(
     val cart: Cart,

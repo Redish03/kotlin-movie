@@ -3,7 +3,10 @@ package movie.domain.payment.discount
 import movie.domain.reservation.ReservedScreen
 
 class MovieDayDiscountPolicy : DiscountPolicy {
-    override fun discount(reservedScreen: ReservedScreen, money: Int): Int {
+    override fun discount(
+        reservedScreen: ReservedScreen,
+        money: Int,
+    ): Int {
         if (isDiscountable(reservedScreen)) return (money * DISCOUNT_PERCENT).toInt()
         return money
     }

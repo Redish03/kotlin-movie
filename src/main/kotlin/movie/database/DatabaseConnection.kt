@@ -38,7 +38,7 @@ object DatabaseConnection {
                 seat_grade VARCHAR(10) NOT NULL,
                 FOREIGN KEY (screening_id) REFERENCES screening(id)
             );
-        """.trimIndent()
+            """.trimIndent(),
         )
     }
 }

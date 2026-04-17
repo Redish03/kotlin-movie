@@ -5,7 +5,11 @@ import movie.domain.reservation.Seat
 import movie.domain.reservation.SeatColumn
 import movie.domain.reservation.SeatGrade
 import movie.domain.reservation.SeatRow
-import movie.domain.screening.*
+import movie.domain.screening.Movie
+import movie.domain.screening.MovieTitle
+import movie.domain.screening.RunningTime
+import movie.domain.screening.Screening
+import movie.domain.screening.ScreeningStartTime
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.time.LocalDate
@@ -15,18 +19,18 @@ import javax.sql.DataSource
 class JdbcScreeningRepository(
     private val dataSource: DataSource,
 ) : ScreeningRepository {
-
     override fun findByMovieTitleAndDate(
         title: String,
-        date: LocalDate
+        date: LocalDate,
     ): List<Screening> {
-        val sql = """
+        val sql =
+            """
             SELECT s.id AS screening_id, s.start_time, m.id AS movie_id, m.title, m.running_time
             FROM screening s
             JOIN movie m ON s.movie_id = m.id
             WHERE m.title = ? AND CAST(s.start_time AS DATE) = ?
             ORDER BY s.start_time
-        """.trimIndent()
+            """.trimIndent()
 
         val screenings = mutableListOf<Screening>()
 
@@ -48,7 +52,7 @@ class JdbcScreeningRepository(
 
     override fun findSelectedScreening(
         selectedNumber: Int,
-        availableScreenings: List<Screening>
+        availableScreenings: List<Screening>,
     ): Screening {
         require(selectedNumber in 1..availableScreenings.size) {
             ErrorMessages.INCORRECT_SCREENING_NUMBER.message
@@ -63,9 +67,10 @@ class JdbcScreeningRepository(
 
         val existingSeats = findReservedSeats(screeningId)
 
-        val newSeats = updatedScreening.reservedSeats.filter { newSeat ->
-            existingSeats.none { it.seatNumber == newSeat.seatNumber }
-        }
+        val newSeats =
+            updatedScreening.reservedSeats.filter { newSeat ->
+                existingSeats.none { it.seatNumber == newSeat.seatNumber }
+            }
 
         if (newSeats.isNotEmpty()) {
             val sql = "INSERT INTO reservation (screening_id, seat_row, seat_column, seat_grade) VALUES (?, ?, ?, ?)"
@@ -86,12 +91,13 @@ class JdbcScreeningRepository(
     }
 
     override fun findAll(): List<Screening> {
-        val sql = """
+        val sql =
+            """
             SELECT s.id AS screening_id, s.start_time, m.id AS movie_id, m.title, m.running_time
             FROM screening s
             JOIN movie m ON s.movie_id = m.id
             ORDER BY s.start_time
-        """.trimIndent()
+            """.trimIndent()
 
         val screenings = mutableListOf<Screening>()
 
@@ -108,12 +114,13 @@ class JdbcScreeningRepository(
     }
 
     override fun findById(id: Long): Screening? {
-        val sql = """
+        val sql =
+            """
             SELECT s.id AS screening_id, s.start_time, m.id AS movie_id, m.title, m.running_time
             FROM screening s
             JOIN movie m ON s.movie_id = m.id
             WHERE s.id = ?
-        """.trimIndent()
+            """.trimIndent()
 
         dataSource.connection.use { conn ->
             conn.prepareStatement(sql).use { pstmt ->
@@ -141,8 +148,8 @@ class JdbcScreeningRepository(
                             Seat(
                                 SeatRow(rs.getString("seat_row")),
                                 SeatColumn(rs.getInt("seat_column")),
-                                SeatGrade.valueOf(rs.getString("seat_grade"))
-                            )
+                                SeatGrade.valueOf(rs.getString("seat_grade")),
+                            ),
                         )
                     }
                 }
@@ -153,16 +160,17 @@ class JdbcScreeningRepository(
 
     private fun mapToScreening(rs: ResultSet): Screening {
         val screeningId = rs.getLong("screening_id")
-        val movie = Movie(
-            id = rs.getLong("movie_id"),
-            title = MovieTitle(rs.getString("title")),
-            runningTime = RunningTime(rs.getInt("running_time"))
-        )
+        val movie =
+            Movie(
+                id = rs.getLong("movie_id"),
+                title = MovieTitle(rs.getString("title")),
+                runningTime = RunningTime(rs.getInt("running_time")),
+            )
         return Screening.create(
             id = screeningId,
             movie = movie,
             startTime = ScreeningStartTime(rs.getTimestamp("start_time").toLocalDateTime()),
-            reservedSeats = findReservedSeats(screeningId)
+            reservedSeats = findReservedSeats(screeningId),
         )
     }
 }

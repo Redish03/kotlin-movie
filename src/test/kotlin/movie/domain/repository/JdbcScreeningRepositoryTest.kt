@@ -15,7 +15,6 @@ import java.util.logging.Logger
 import javax.sql.DataSource
 
 class JdbcScreeningRepositoryTest {
-
     private lateinit var connection: Connection
     private lateinit var dataSource: DataSource
     private lateinit var repository: JdbcScreeningRepository
@@ -34,17 +33,29 @@ class JdbcScreeningRepositoryTest {
         statement.execute("INSERT INTO screening (id, movie_id, start_time) VALUES (1, 1, '2026-04-10 10:00:00')")
 
         // Simple DataSource wrapper for testing
-        dataSource = object : DataSource {
-            override fun getConnection(): Connection = DatabaseConnection.getConnection(isTest = true)
-            override fun getConnection(username: String?, password: String?): Connection = getConnection()
-            override fun getLogWriter(): PrintWriter? = null
-            override fun setLogWriter(out: PrintWriter?) {}
-            override fun setLoginTimeout(seconds: Int) {}
-            override fun getLoginTimeout(): Int = 0
-            override fun <T : Any?> unwrap(iface: Class<T>?): T = throw UnsupportedOperationException()
-            override fun isWrapperFor(iface: Class<*>?): Boolean = false
-            override fun getParentLogger(): Logger = throw SQLFeatureNotSupportedException()
-        }
+        dataSource =
+            object : DataSource {
+                override fun getConnection(): Connection = DatabaseConnection.getConnection(isTest = true)
+
+                override fun getConnection(
+                    username: String?,
+                    password: String?,
+                ): Connection = getConnection()
+
+                override fun getLogWriter(): PrintWriter? = null
+
+                override fun setLogWriter(out: PrintWriter?) {}
+
+                override fun setLoginTimeout(seconds: Int) {}
+
+                override fun getLoginTimeout(): Int = 0
+
+                override fun <T : Any?> unwrap(iface: Class<T>?): T = throw UnsupportedOperationException()
+
+                override fun isWrapperFor(iface: Class<*>?): Boolean = false
+
+                override fun getParentLogger(): Logger = throw SQLFeatureNotSupportedException()
+            }
 
         repository = JdbcScreeningRepository(dataSource)
     }

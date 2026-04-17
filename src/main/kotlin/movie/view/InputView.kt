@@ -1,7 +1,6 @@
 package movie.view
 
 import movie.constants.ErrorMessages
-
 import java.time.LocalDate
 
 class InputView {
@@ -46,10 +45,11 @@ class InputView {
         val input = readln().trim()
         require(input.isNotBlank()) { ErrorMessages.INCORRECT_SEAT_NUMBER.message }
 
-        val convertedInput = input
-            .split(SEAT_NUMBER_PARSER)
-            .map { it.trim().uppercase() }
-            .filter { it.isNotBlank() }
+        val convertedInput =
+            input
+                .split(SEAT_NUMBER_PARSER)
+                .map { it.trim().uppercase() }
+                .filter { it.isNotBlank() }
 
         require(convertedInput.toSet().size == convertedInput.size) {
             ErrorMessages.SELECT_SAME_SEAT.message

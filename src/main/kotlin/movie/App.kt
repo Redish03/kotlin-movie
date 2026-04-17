@@ -18,10 +18,11 @@ fun main() {
             screenings = repository,
             inputView = InputView(),
             outputView = OutputView(),
-            reservation = Reservation(
-                screenings = repository,
-                cart = Cart(),
-            )
+            reservation =
+                Reservation(
+                    screenings = repository,
+                    cart = Cart(),
+                ),
         )
 
     controller.run()

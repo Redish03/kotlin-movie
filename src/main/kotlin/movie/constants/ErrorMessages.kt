@@ -1,6 +1,8 @@
 package movie.constants
 
-enum class ErrorMessages(val message: String) {
+enum class ErrorMessages(
+    val message: String,
+) {
     SCREENING_DOES_NOT_EXIST("해당 조건의 상영이 없습니다."),
     INVALID_DATE_FORMAT("날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)"),
     SELECTED_RESERVED_SEAT("이미 예약된 좌석은 다시 선택할 수 없습니다."),
@@ -17,5 +19,4 @@ enum class ErrorMessages(val message: String) {
     INVALID_SEAT("유효하지 않은 좌석 위치입니다."),
     NOT_EXIST_SEAT("존재하지 않는 좌석입니다: "),
     PAY_FAIL("결제에 실패했습니다."),
-
 }

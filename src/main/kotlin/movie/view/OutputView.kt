@@ -78,7 +78,10 @@ class OutputView {
         println("내역:")
     }
 
-    fun printTicketReservationInformation(seatsInfos: List<Seat>, screeningInfo: Screening) {
+    fun printTicketReservationInformation(
+        seatsInfos: List<Seat>,
+        screeningInfo: Screening,
+    ) {
         println(formatSeatsAndScreeningInfo(seatsInfos, screeningInfo))
     }
 
@@ -95,16 +98,18 @@ class OutputView {
         println(message)
     }
 
-    private fun formatSeatsAndScreeningInfo(seats: List<Seat>, screeningInfos: Screening): String {
+    private fun formatSeatsAndScreeningInfo(
+        seats: List<Seat>,
+        screeningInfos: Screening,
+    ): String {
         val seats = seats.joinToString(", ") { it.seatNumber }
-        val screeningInfo = "- [${screeningInfos.movie.title.value}]" +
+        val screeningInfo =
+            "- [${screeningInfos.movie.title.value}]" +
                 " ${screeningInfos.startTime.value.toLocalDate()} " +
                 "${screeningInfos.startTime.value.toLocalTime()}"
 
         return screeningInfo + "좌석: " + seats
     }
 
-    fun Int.toDecimalFormat(): String {
-        return "%,d".format(this)
-    }
+    fun Int.toDecimalFormat(): String = "%,d".format(this)
 }

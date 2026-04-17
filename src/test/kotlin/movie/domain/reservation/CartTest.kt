@@ -1,8 +1,8 @@
 package movie.domain.reservation
 
 import movie.domain.reservation.Cart
-import movie.domain.screening.Movie
 import movie.domain.reservation.ReservedScreen
+import movie.domain.screening.Movie
 import movie.domain.screening.MovieTitle
 import movie.domain.screening.RunningTime
 import movie.domain.screening.Screening

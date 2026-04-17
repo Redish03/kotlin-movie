@@ -11,10 +11,11 @@ class Screenings(
         title: String,
         date: LocalDate,
     ): List<Screening> {
-        val foundedScreenings = screenings
-            .filter {
-                it.movie.title.value == title && it.startTime.value.toLocalDate() == date
-            }.sortedBy { it.startTime.value }
+        val foundedScreenings =
+            screenings
+                .filter {
+                    it.movie.title.value == title && it.startTime.value.toLocalDate() == date
+                }.sortedBy { it.startTime.value }
         require(foundedScreenings.isNotEmpty()) { ErrorMessages.SCREENING_DOES_NOT_EXIST.message }
         return foundedScreenings
     }
@@ -31,9 +32,10 @@ class Screenings(
     }
 
     override fun updateScreening(updatedScreening: Screening) {
-        screenings = screenings.map {
-            if (it.movie == updatedScreening.movie && it.startTime == updatedScreening.startTime) updatedScreening else it
-        }
+        screenings =
+            screenings.map {
+                if (it.movie == updatedScreening.movie && it.startTime == updatedScreening.startTime) updatedScreening else it
+            }
     }
 
     override fun findAll(): List<Screening> = screenings.toList()

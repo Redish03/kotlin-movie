@@ -28,8 +28,7 @@ class Screening private constructor(
 
     fun endTime(): LocalDateTime = startTime.value.plusMinutes(movie.runningTime.value.toLong())
 
-    fun overlaps(otherScreen: Screening): Boolean =
-        startTime.value < otherScreen.endTime() && otherScreen.startTime.value < endTime()
+    fun overlaps(otherScreen: Screening): Boolean = startTime.value < otherScreen.endTime() && otherScreen.startTime.value < endTime()
 
     companion object {
         fun create(

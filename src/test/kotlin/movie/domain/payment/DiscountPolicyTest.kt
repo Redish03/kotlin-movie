@@ -14,18 +14,20 @@ import java.time.LocalDateTime
 
 class DiscountPolicyTest {
     private fun createReservedScreen(dateTime: LocalDateTime): ReservedScreen {
-        val movie = Movie(
-            title = MovieTitle("테스트 영화"),
-            runningTime = RunningTime(120)
-        )
-        val screening = Screening.create(
-            movie = movie,
-            startTime = ScreeningStartTime(dateTime),
-            reservedSeats = emptyList()
-        )
+        val movie =
+            Movie(
+                title = MovieTitle("테스트 영화"),
+                runningTime = RunningTime(120),
+            )
+        val screening =
+            Screening.create(
+                movie = movie,
+                startTime = ScreeningStartTime(dateTime),
+                reservedSeats = emptyList(),
+            )
         return ReservedScreen(
             screen = screening,
-            seats = emptyList()
+            seats = emptyList(),
         )
     }
 

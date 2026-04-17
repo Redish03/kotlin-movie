@@ -4,5 +4,5 @@ data class MovieResponse(
     val id: Long,
     val title: String,
     val runningTimeMinutes: Int,
-    val screenings: List<ScreeningResponse>
+    val screenings: List<ScreeningResponse>,
 )
