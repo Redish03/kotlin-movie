@@ -35,4 +35,6 @@ class Screenings(
             if(it.movie == updatedScreening.movie && it.startTime == updatedScreening.startTime) updatedScreening else it
         }
     }
+
+    override fun findAll(): List<Screening> = screenings.toList()
 }
