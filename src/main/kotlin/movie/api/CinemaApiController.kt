@@ -1,5 +1,8 @@
 package movie.api
 
+import movie.api.dto.MovieResponse
+import movie.api.dto.MoviesResponse
+import movie.api.dto.ScreeningResponse
 import movie.domain.account.Account
 import movie.domain.account.Point
 import movie.domain.reservation.Seats
@@ -7,7 +10,6 @@ import movie.repository.ScreeningRepository
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/api")
@@ -32,23 +34,3 @@ class CinemaApiController(
         return MoviesResponse(movieResponses)
     }
 }
-
-data class MoviesResponse(val movies: List<MovieResponse>)
-
-data class MovieResponse(
-    val id: Long,
-    val title: String,
-    val runningTimeMinutes: Int,
-    val screenings: List<ScreeningResponse>
-)
-
-data class ScreeningResponse(
-    val id: Long,
-    val startAt: LocalDateTime,
-    val endAt: LocalDateTime,
-)
-
-data class ReservationItemRequest(
-    val screeningId: Long,
-    val seats: List<String>
-)
