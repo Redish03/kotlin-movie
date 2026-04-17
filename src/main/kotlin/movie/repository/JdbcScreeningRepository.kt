@@ -10,12 +10,16 @@ import movie.domain.screening.MovieTitle
 import movie.domain.screening.RunningTime
 import movie.domain.screening.Screening
 import movie.domain.screening.ScreeningStartTime
-import java.sql.Connection
+import org.springframework.stereotype.Repository
+import java.sql.ResultSet
 import java.time.LocalDate
+import javax.sql.DataSource
 
+@Repository
 class JdbcScreeningRepository(
-    private val connection: Connection
+    private val dataSource: DataSource,
 ) : ScreeningRepository {
+
     override fun findByMovieTitleAndDate(
         title: String,
         date: LocalDate
@@ -30,30 +34,14 @@ class JdbcScreeningRepository(
 
         val screenings = mutableListOf<Screening>()
 
-        connection.prepareStatement(sql).use { statement ->
-            statement.setString(1, title)
-            statement.setDate(2, java.sql.Date.valueOf(date))
-
-            statement.executeQuery().use { rs ->
-                while (rs.next()) {
-                    val screeningId = rs.getLong("screening_id")
-
-                    val movie = Movie(
-                        id = rs.getLong("movie_id"),
-                        title = MovieTitle(rs.getString("title")),
-                        runningTime = RunningTime(rs.getInt("running_time"))
-                    )
-
-                    val reservedSeats = findReservedSeats(screeningId)
-
-                    screenings.add(
-                        Screening.create(
-                            id = screeningId,
-                            movie = movie,
-                            startTime = ScreeningStartTime(rs.getTimestamp("start_time").toLocalDateTime()),
-                            reservedSeats = reservedSeats
-                        )
-                    )
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(sql).use { pstmt ->
+                pstmt.setString(1, title)
+                pstmt.setDate(2, java.sql.Date.valueOf(date))
+                pstmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        screenings.add(mapToScreening(rs))
+                    }
                 }
             }
         }
@@ -86,36 +74,19 @@ class JdbcScreeningRepository(
         if (newSeats.isNotEmpty()) {
             val sql = "INSERT INTO reservation (screening_id, seat_row, seat_column, seat_grade) VALUES (?, ?, ?, ?)"
 
-            connection.prepareStatement(sql).use { statement ->
-                for (seat in newSeats) {
-                    statement.setLong(1, screeningId) // 이제 식별자를 바로 쓸 수 있습니다!
-                    statement.setString(2, seat.row.value)
-                    statement.setInt(3, seat.column.value)
-                    statement.setString(4, seat.grade.name)
-                    statement.addBatch()
-                }
-                statement.executeBatch()
-            }
-        }
-    }
-
-    private fun findReservedSeats(screeningId: Long): List<Seat> {
-        val sql = "SELECT seat_row, seat_column, seat_grade FROM reservation WHERE screening_id = ?"
-        val seats = mutableListOf<Seat>()
-
-        connection.prepareStatement(sql).use { pstmt ->
-            pstmt.setLong(1, screeningId)
-            pstmt.executeQuery().use { rs ->
-                while (rs.next()) {
-                    val row = rs.getString("seat_row")
-                    val column = rs.getInt("seat_column")
-                    val grade = SeatGrade.valueOf(rs.getString("seat_grade"))
-
-                    seats.add(Seat(SeatRow(row), SeatColumn(column), grade))
+            dataSource.connection.use { conn ->
+                conn.prepareStatement(sql).use { pstmt ->
+                    for (seat in newSeats) {
+                        pstmt.setLong(1, screeningId)
+                        pstmt.setString(2, seat.row.value)
+                        pstmt.setInt(3, seat.column.value)
+                        pstmt.setString(4, seat.grade.name)
+                        pstmt.addBatch()
+                    }
+                    pstmt.executeBatch()
                 }
             }
         }
-        return seats
     }
 
     override fun findAll(): List<Screening> {
@@ -128,30 +99,74 @@ class JdbcScreeningRepository(
 
         val screenings = mutableListOf<Screening>()
 
-        connection.prepareStatement(sql).use { statement ->
-            statement.executeQuery().use { rs ->
-                while (rs.next()) {
-                    val screeningId = rs.getLong("screening_id")
-
-                    val movie = Movie(
-                        id = rs.getLong("movie_id"),
-                        title = MovieTitle(rs.getString("title")),
-                        runningTime = RunningTime(rs.getInt("running_time"))
-                    )
-
-                    val reservedSeats = findReservedSeats(screeningId)
-
-                    screenings.add(
-                        Screening.create(
-                            id = screeningId,
-                            movie = movie,
-                            startTime = ScreeningStartTime(rs.getTimestamp("start_time").toLocalDateTime()),
-                            reservedSeats = reservedSeats
-                        )
-                    )
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(sql).use { pstmt ->
+                pstmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        screenings.add(mapToScreening(rs))
+                    }
                 }
             }
         }
         return screenings
+    }
+
+    override fun findById(id: Long): Screening? {
+        val sql = """
+            SELECT s.id AS screening_id, s.start_time, m.id AS movie_id, m.title, m.running_time
+            FROM screening s
+            JOIN movie m ON s.movie_id = m.id
+            WHERE s.id = ?
+        """.trimIndent()
+
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(sql).use { pstmt ->
+                pstmt.setLong(1, id)
+                pstmt.executeQuery().use { rs ->
+                    if (rs.next()) {
+                        return mapToScreening(rs)
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    private fun findReservedSeats(screeningId: Long): List<Seat> {
+        val sql = "SELECT seat_row, seat_column, seat_grade FROM reservation WHERE screening_id = ?"
+        val seats = mutableListOf<Seat>()
+
+        dataSource.connection.use { conn ->
+            conn.prepareStatement(sql).use { pstmt ->
+                pstmt.setLong(1, screeningId)
+                pstmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        seats.add(
+                            Seat(
+                                SeatRow(rs.getString("seat_row")),
+                                SeatColumn(rs.getInt("seat_column")),
+                                SeatGrade.valueOf(rs.getString("seat_grade"))
+                            )
+                        )
+                    }
+                }
+            }
+        }
+        return seats
+    }
+
+    private fun mapToScreening(rs: ResultSet): Screening {
+        val screeningId = rs.getLong("screening_id")
+        val movie = Movie(
+            id = rs.getLong("movie_id"),
+            title = MovieTitle(rs.getString("title")),
+            runningTime = RunningTime(rs.getInt("running_time"))
+        )
+        return Screening.create(
+            id = screeningId,
+            movie = movie,
+            startTime = ScreeningStartTime(rs.getTimestamp("start_time").toLocalDateTime()),
+            reservedSeats = findReservedSeats(screeningId)
+        )
     }
 }
