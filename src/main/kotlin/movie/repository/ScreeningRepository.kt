@@ -9,4 +9,5 @@ interface ScreeningRepository {
     fun findSelectedScreening(selectedNumber: Int, availableScreenings: List<Screening>) : Screening
 
     fun updateScreening(updatedScreening: Screening)
+    fun findAll(): List<Screening>
 }

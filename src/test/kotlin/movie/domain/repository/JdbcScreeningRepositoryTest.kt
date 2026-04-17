@@ -53,27 +53,17 @@ class JdbcScreeningRepositoryTest {
     }
 
     @Test
-    fun `예약 정보를 DB에 정상적으로 저장한다`() {
+    fun `DB에 저장된 모든 상영 목록을 반환한다`() {
         // given
-        val screeningId = 1L
-        val seatRow = "A"
-        val seatColumn = 1
-        val seatGrade = "S"
-
-        val insertQuery = "INSERT INTO reservation (screening_id, seat_row, seat_column, seat_grade) VALUES (?, ?, ?, ?)"
-        val pstmt = connection.prepareStatement(insertQuery)
-        pstmt.setLong(1, screeningId)
-        pstmt.setString(2, seatRow)
-        pstmt.setInt(3, seatColumn)
-        pstmt.setString(4, seatGrade)
-        pstmt.executeUpdate()
-
         val statement = connection.createStatement()
-        val rs = statement.executeQuery("SELECT * FROM reservation WHERE screening_id = 1")
+        statement.execute("INSERT INTO movie (id, title, running_time) VALUES (2, '인셉션', 148)")
+        statement.execute("INSERT INTO screening (id, movie_id, start_time) VALUES (2, 2, '2026-04-11 15:00:00')")
 
-        assertThat(rs.next()).isTrue() // 데이터가 존재해야 함
-        assertThat(rs.getString("seat_row")).isEqualTo("A")
-        assertThat(rs.getInt("seat_column")).isEqualTo(1)
-        assertThat(rs.getString("seat_grade")).isEqualTo("S")
+        // when
+        val screenings = repository.findAll()
+
+        // then
+        assertThat(screenings).hasSize(2)
+        assertThat(screenings.map { it.movie.title.value }).containsExactlyInAnyOrder("어벤져스", "인셉션")
     }
 }

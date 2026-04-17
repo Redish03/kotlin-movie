@@ -117,4 +117,41 @@ class JdbcScreeningRepository(
         }
         return seats
     }
+
+    override fun findAll(): List<Screening> {
+        val sql = """
+            SELECT s.id AS screening_id, s.start_time, m.id AS movie_id, m.title, m.running_time
+            FROM screening s
+            JOIN movie m ON s.movie_id = m.id
+            ORDER BY s.start_time
+        """.trimIndent()
+
+        val screenings = mutableListOf<Screening>()
+
+        connection.prepareStatement(sql).use { statement ->
+            statement.executeQuery().use { rs ->
+                while (rs.next()) {
+                    val screeningId = rs.getLong("screening_id")
+
+                    val movie = Movie(
+                        id = rs.getLong("movie_id"),
+                        title = MovieTitle(rs.getString("title")),
+                        runningTime = RunningTime(rs.getInt("running_time"))
+                    )
+
+                    val reservedSeats = findReservedSeats(screeningId)
+
+                    screenings.add(
+                        Screening.create(
+                            id = screeningId,
+                            movie = movie,
+                            startTime = ScreeningStartTime(rs.getTimestamp("start_time").toLocalDateTime()),
+                            reservedSeats = reservedSeats
+                        )
+                    )
+                }
+            }
+        }
+        return screenings
+    }
 }
