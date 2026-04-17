@@ -10,4 +10,5 @@ interface ScreeningRepository {
 
     fun updateScreening(updatedScreening: Screening)
     fun findAll(): List<Screening>
+    fun findById(id: Long): Screening?
 }

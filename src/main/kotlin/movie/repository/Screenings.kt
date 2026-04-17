@@ -37,4 +37,6 @@ class Screenings(
     }
 
     override fun findAll(): List<Screening> = screenings.toList()
+
+    override fun findById(id: Long): Screening? = screenings.find { it.id == id }
 }
