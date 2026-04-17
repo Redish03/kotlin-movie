@@ -39,6 +39,7 @@ class Screening private constructor(
             reservedSeats: List<Seat> = emptyList(),
         ): Screening =
             Screening(
+                id = id,
                 movie = movie,
                 startTime = startTime,
                 reservedSeats = reservedSeats,
